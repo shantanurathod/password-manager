@@ -1,0 +1,7 @@
+*.pyc
+*.pyo
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+Src/__pycache__/
