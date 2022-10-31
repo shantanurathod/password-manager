@@ -1,4 +1,5 @@
 import sqlite3
+from traceback import print_tb
 
 class PMdatabase:
     def __init__(self) -> None:
@@ -20,9 +21,10 @@ class PMdatabase:
             self.connection.commit()
     
     def create_username_table(self, username):
-        tables = self.cursor.execute("""SELECT name FROM sqlite_master WHERE type='table'""").fetchmany()
+        tables = self.cursor.execute("""SELECT name FROM sqlite_master WHERE type='table'""").fetchall()
         emptyUserNameTable = True
         for table in tables:
+            # print(table)
             for name in table:
                 if name == username:
                     # print(name)
@@ -32,6 +34,10 @@ class PMdatabase:
             print(f"creating {username} table") 
             self.cursor.execute(f"""CREATE TABLE {username}(name_of_site varchar(50), username of site varchar(50), url varchar(200), password blob)""")
             self.connection.commit()
+            return True
+        else:
+            print(f"[{username} already exist]")
+            return False
 
     def insert_data(self, username, msalt):
         usernames = self.cursor.execute("SELECT username FROM user")

@@ -13,44 +13,46 @@ class Baddy:
 
     def signup(self):
         username = input("Enter your User ID/Name: \n[This ID/Name will only used for differentiating you from the other users. It'll not be used for encryption]\n")
-
+        # if 
         self.gen_master_password(username)
 
     def gen_master_password(self, username):
         #master salt
         msalt = os.urandom(16)
-        self.db.insert_data(username, msalt)
+        self.db.insert_data(username, msalt)                
+        if self.db.create_username_table(username):
 
-        confirm_password_match = False
-        while confirm_password_match != True:
-            #derive
-            kdf = Scrypt(
-                salt = msalt,
-                length = 32,
-                n = 2**14,
-                r = 8,
-                p = 1
-            )
-        
-            #making master password
-            encrypted_master_password = kdf.derive(maskpass.askpass("Enter your master password: ").encode())
-
-            #confirm master password
-            kdf = Scrypt(
-                salt = msalt,
-                length = 32,
-                n = 2**14,
-                r = 8,
-                p = 1
-            )
+            confirm_password_match = False
+            while confirm_password_match != True:
+                #derive
+                kdf = Scrypt(
+                    salt = msalt,
+                    length = 32,
+                    n = 2**14,
+                    r = 8,
+                    p = 1
+                )
             
-            if kdf.derive(maskpass.askpass("Confirm Password: ").encode()) == encrypted_master_password:
-                confirm_password_match = True
-                self.db.insert_master_password(encrypted_master_password, username)
-                self.db.create_username_table(username)
-                print("Sign Up successfull!")
-            else:
-                print("[entries didn't match, try again]") 
+                #making master password
+                encrypted_master_password = kdf.derive(maskpass.askpass("Enter your master password: ").encode())
+
+                #confirm master password
+                kdf = Scrypt(
+                    salt = msalt,
+                    length = 32,
+                    n = 2**14,
+                    r = 8,
+                    p = 1
+                )
+                
+                if kdf.derive(maskpass.askpass("Confirm Password: ").encode()) == encrypted_master_password:
+                        confirm_password_match = True                
+                        self.db.insert_master_password(encrypted_master_password, username)
+
+                        self.activeUser = self.db.cursor.execute(f"SELECT * FROM user WHERE username = '{username}'").fetchone()
+                        print("Sign Up successfull!")
+                else:
+                    print("[entries didn't match, try again]") 
 
     def login(self):
         logged = False

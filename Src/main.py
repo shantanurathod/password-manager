@@ -16,7 +16,7 @@ class ConsoleUI:
             choice = input("\nEnter your choice: ")
             if choice == '1':
                 self.baddy.signup()
-                self.run_logged()
+                # self.run_logged()
             elif choice == '2':
                 self.baddy.login()
                 self.run_logged()
